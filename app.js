@@ -5,11 +5,11 @@ const select = document.querySelector("#select");
 const input = document.querySelector("#input");
 
 const fetchCountryByName = (name) => {
-  const url = `https://restcountries.com/v3.1/name/${name}`;
+  const url = `https://restcountries.com/v3.1/all/`;
   fetch(url)
     .then((res) => {
       if (!res.ok) {
-        renderError(`Something went wrong: ${res.status}`);
+        renderError(`something went wrong: ${res.status}`);
         throw new Error();
       }
       return res.json();
@@ -17,70 +17,70 @@ const fetchCountryByName = (name) => {
     .then((data) => renderCountries(data))
     .catch((err) => console.log(err));
 };
+fetchCountryByName("");
 
 const renderError = () => {
   const countryDiv = document.querySelector(".countries");
   countryDiv.innerHTML += `
-    <h2>Countries can not fetched</h2>
-    <img src="./img/404.png" alt="" />
-  `;
+        <h2> Countries cannot be fetched</h2>
+        <img src="./img/404.png" alt="" />
+    `;
 };
-
 const renderCountries = (data) => {
-  console.log(data);
-  const countryDiv = document.querySelector(".countries");
-  const {
-    capital,
-    currencies,
-    flags: { svg },
-    languages,
-    name: { common },
-    region,
-  } = data[0];
-  select.innerHTML += `<option>${common}</option> `;
-  console.log(Object.values(languages));
-  console.log(Object.values(currencies)[0].name);
-  console.log(Object.values(currencies)[0].symbol);
+  data.forEach((item) => {
+    const {
+      name: { common },
+    } = item;
 
-  countryDiv.innerHTML += `
-    <div class="card mx-auto m-3 shadow-lg" style="width: 18rem;">
-      <img src="${svg}" class="card-img-top" alt="...">
-      <div class="card-body">
+    select.innerHTML += `
+    <option style="width: 300px">${common}</option>`;
+  });
+  select.addEventListener("change", (e) => {
+    // console.log(e.target.value);
+
+    data.filter((data) => {
+      // console.log(data);
+      const {
+        capital,
+        currencies,
+        flags: { svg },
+        languages,
+        name: { common },
+        region,
+      } = data;
+
+      // console.log(postalCode);
+      if (common == e.target.value) {
+        // console.log(common);
+        const countryDiv = document.querySelector(".countries");
+        countryDiv.innerHTML = `
+        <div class="card mx-auto m-3 mt-5 shadow-lg" style="width: 18rem; ">
+         <img src="${svg}" class="card-img-top" alt="...">
+        <div class="card-body">
         <h5 class="card-title">${common}</h5>
         <p class="card-text">${region}</p>
-      </div>
-      <ul class="list-group list-group-flush">
+         </div>
+        <ul class="list-group list-group-flush">
         <li class="list-group-item">
           <i class="fas fa-lg fa-landmark"></i> ${capital}
         </li>
         <li class="list-group-item">
-          <i class="fas fa-lg fa-comments"></i> ${Object.values(languages)}
-        </li>
-        <li class="list-group-item">
+            <i class="fa-solid fa-comments"></i> ${Object.values(languages)}
+          </li>
+        
+         <li class="list-group-item">
           <i class="fas fa-lg fa-money-bill-wave"></i>
           ${Object.values(currencies).map((item) => Object.values(item) + " ")}
-       </li>
-      </ul>
-      <div class="card-body">
+         </li>
+         </ul>
+            <div class="card-body">
         <a href="#" class="card-link">Card link</a>
         <a href="#" class="card-link">Another link</a>
-      </div>
-    </div>
-
-
-  `;
-};
-
-fetch("https://restcountries.com/v3.1/all")
-  .then((res) => res.json())
-  .then((res) => {
-    for (i in res) {
-      document.querySelector(
-        "#select"
-      ).innerHTML += `<option class="select" selected>${res[i].name.common}</option>`;
-    }
-    select.disabled = false;
-    // fetchCountryByName(`${select}`);
+            </div>
+         </div>
+    
+    `;
+      }
+    });
   });
-console.log(select.value.select);
-console.log(input.value);
+};
